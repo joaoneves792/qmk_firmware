@@ -33,6 +33,8 @@ __attribute__((weak)) void dynamic_macro_record_start_user(void) { dynamic_macro
 
 __attribute__((weak)) void dynamic_macro_play_user(int8_t direction) { dynamic_macro_led_blink(); }
 
+__attribute__((weak)) void dynamic_macro_play_user_end(int8_t direction) { dynamic_macro_led_blink(); }
+
 __attribute__((weak)) void dynamic_macro_record_key_user(int8_t direction, keyrecord_t *record) { dynamic_macro_led_blink(); }
 
 __attribute__((weak)) void dynamic_macro_record_end_user(int8_t direction) { dynamic_macro_led_blink(); }
@@ -69,6 +71,7 @@ void dynamic_macro_record_start(tinykeyevent_t **macro_pointer, tinykeyevent_t *
  */
 void dynamic_macro_play(tinykeyevent_t *macro_buffer, tinykeyevent_t *macro_end, int8_t direction) {
     dprintf("dynamic macro: slot %d playback\n", DYNAMIC_MACRO_CURRENT_SLOT());
+    dynamic_macro_play_user(direction);
 
     layer_state_t saved_layer_state = layer_state;
 
@@ -78,7 +81,7 @@ void dynamic_macro_play(tinykeyevent_t *macro_buffer, tinykeyevent_t *macro_end,
     static keyrecord_t r;
     while (macro_buffer != macro_end) {
         r.event.pressed = macro_buffer->pressed;
-        r.event.time = 600;
+        r.event.time = 30;
         r.event.key.col = macro_buffer->col;
         r.event.key.row = macro_buffer->row;
         r.tap.interrupted = false;
@@ -87,15 +90,16 @@ void dynamic_macro_play(tinykeyevent_t *macro_buffer, tinykeyevent_t *macro_end,
         r.tap.reserved2 = false;
         r.tap.count = 0;
         //process_record(macro_buffer);
-        macro_buffer += direction;
         process_record(&r);
+        macro_buffer += direction;
+        wait_ms(50);
     }
 
     clear_keyboard();
 
     layer_state = saved_layer_state;
 
-    dynamic_macro_play_user(direction);
+    dynamic_macro_play_user_end(direction);
 }
 
 /**
@@ -246,12 +250,12 @@ bool process_dynamic_macro(uint16_t keycode, keyrecord_t *record) {
                     macro_id = 0;
                 }
                 return false;
-#ifdef DYNAMIC_MACRO_NO_NESTING
+//#ifdef DYNAMIC_MACRO_NO_NESTING
             case DYN_MACRO_PLAY1:
             case DYN_MACRO_PLAY2:
                 dprintln("dynamic macro: ignoring macro play key while recording");
                 return false;
-#endif
+//#endif
             default:
                 tinykeyevent_t tinyrecord;
                 //If overflow then 'n' 6x4

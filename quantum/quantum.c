@@ -123,6 +123,8 @@ __attribute__((weak)) void post_process_record_kb(uint16_t keycode, keyrecord_t 
 
 __attribute__((weak)) void post_process_record_user(uint16_t keycode, keyrecord_t *record) {}
 
+__attribute__((weak)) bool post_process_intercept_user(uint16_t keycode, keyrecord_t *record) { return true; }
+
 void reset_keyboard(void) {
     clear_keyboard();
 #if defined(MIDI_ENABLE) && defined(MIDI_BASIC)
@@ -287,7 +289,7 @@ bool process_record_quantum(keyrecord_t *record) {
             process_joystick(keycode, record) &&
 #endif
             true)) {
-        return false;
+        goto processed;
     }
 
     if (record->event.pressed) {
@@ -295,7 +297,7 @@ bool process_record_quantum(keyrecord_t *record) {
 #ifndef NO_RESET
             case RESET:
                 reset_keyboard();
-                return false;
+                goto processed;
 #endif
 #ifndef NO_DEBUG
             case DEBUG:
@@ -306,41 +308,45 @@ bool process_record_quantum(keyrecord_t *record) {
                     print("DEBUG: disabled.\n");
                 }
 #endif
-                return false;
+                goto processed;
             case EEPROM_RESET:
                 eeconfig_init();
-                return false;
+                goto processed;
 #ifdef FAUXCLICKY_ENABLE
             case FC_TOG:
                 FAUXCLICKY_TOGGLE;
-                return false;
+                goto processed;
             case FC_ON:
                 FAUXCLICKY_ON;
-                return false;
+                goto processed;
             case FC_OFF:
                 FAUXCLICKY_OFF;
-                return false;
+                goto processed;
 #endif
 #ifdef VELOCIKEY_ENABLE
             case VLK_TOG:
                 velocikey_toggle();
-                return false;
+                goto processed;
 #endif
 #ifdef BLUETOOTH_ENABLE
             case OUT_AUTO:
                 set_output(OUTPUT_AUTO);
-                return false;
+                goto processed;
             case OUT_USB:
                 set_output(OUTPUT_USB);
-                return false;
+                goto processed;
             case OUT_BT:
                 set_output(OUTPUT_BLUETOOTH);
-                return false;
+                goto processed;
 #endif
         }
     }
 
-    return process_action_kb(record);
+    return post_process_intercept_user(keycode, record);
+    //process_action_kb(record);
+processed:
+    post_process_intercept_user(keycode, record);
+    return false;
 }
 
 // clang-format off
