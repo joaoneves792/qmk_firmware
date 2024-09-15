@@ -1,3 +1,9 @@
+# Forked from https://github.com/SonixQMK/qmk_firmware
+
+Includes customizations for my two GMMK keyboards (FULL/TKL) rev2.
+
+Also some changes to quantum to reduce memory usage.
+
 # Quantum Mechanical Keyboard Firmware
 
 [![Current Version](https://img.shields.io/github/tag/qmk/qmk_firmware.svg)](https://github.com/qmk/qmk_firmware/tags)
