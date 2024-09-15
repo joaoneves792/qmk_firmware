@@ -33,9 +33,30 @@
 #    define DYNAMIC_MACRO_SIZE 128
 #endif
 
+
+//#define SET_TINY_KEY_COL(e, c) (e = ( (c << 4) | (e & 0x0f) ) )
+//#define GET_TINY_KEY_COL(e) (e >> 4)
+//
+//#define SET_TINY_KEY_ROW(e, r) (e = ( ((r & 0x07) << 1) | (e & 0xf1) ) )
+//#define GET_TINY_KEY_COL(e) ((e & 0x0f) >> 1)
+//
+//#define SET_TINY_KEY_PRESSED(e, p)
+
+typedef struct {
+  uint8_t row : 3;
+  uint8_t col : 4;
+  uint8_t pressed : 1;
+} tinykeyevent_t;
+
+
+//typedef struct {
+//  keypos_t key;
+//  bool pressed;
+//} tinykeyevent_t;
+
 void dynamic_macro_led_blink(void);
 bool process_dynamic_macro(uint16_t keycode, keyrecord_t *record);
 void dynamic_macro_record_start_user(void);
 void dynamic_macro_play_user(int8_t direction);
-void dynamic_macro_record_key_user(int8_t direction, keyrecord_t *record);
+//void dynamic_macro_record_key_user(int8_t direction, keyrecord_t *record);
 void dynamic_macro_record_end_user(int8_t direction);

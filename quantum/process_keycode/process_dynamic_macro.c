@@ -50,7 +50,7 @@ __attribute__((weak)) void dynamic_macro_record_end_user(int8_t direction) { dyn
  * @param[out] macro_pointer The new macro buffer iterator.
  * @param[in]  macro_buffer  The macro buffer used to initialize macro_pointer.
  */
-void dynamic_macro_record_start(keyrecord_t **macro_pointer, keyrecord_t *macro_buffer) {
+void dynamic_macro_record_start(tinykeyevent_t **macro_pointer, tinykeyevent_t *macro_buffer) {
     dprintln("dynamic macro recording: started");
 
     dynamic_macro_record_start_user();
@@ -67,17 +67,28 @@ void dynamic_macro_record_start(keyrecord_t **macro_pointer, keyrecord_t *macro_
  * @param macro_end[in]    The element after the last macro buffer element.
  * @param direction[in]    Either +1 or -1, which way to iterate the buffer.
  */
-void dynamic_macro_play(keyrecord_t *macro_buffer, keyrecord_t *macro_end, int8_t direction) {
+void dynamic_macro_play(tinykeyevent_t *macro_buffer, tinykeyevent_t *macro_end, int8_t direction) {
     dprintf("dynamic macro: slot %d playback\n", DYNAMIC_MACRO_CURRENT_SLOT());
 
     layer_state_t saved_layer_state = layer_state;
 
     clear_keyboard();
     layer_clear();
-
+    
+    static keyrecord_t r;
     while (macro_buffer != macro_end) {
-        process_record(macro_buffer);
+        r.event.pressed = macro_buffer->pressed;
+        r.event.time = 600;
+        r.event.key.col = macro_buffer->col;
+        r.event.key.row = macro_buffer->row;
+        r.tap.interrupted = false;
+        r.tap.reserved0 = false;
+        r.tap.reserved1 = false;
+        r.tap.reserved2 = false;
+        r.tap.count = 0;
+        //process_record(macro_buffer);
         macro_buffer += direction;
+        process_record(&r);
     }
 
     clear_keyboard();
@@ -96,9 +107,9 @@ void dynamic_macro_play(keyrecord_t *macro_buffer, keyrecord_t *macro_end, int8_
  * @param direction[in]  Either +1 or -1, which way to iterate the buffer.
  * @param record[in]     The current keypress.
  */
-void dynamic_macro_record_key(keyrecord_t *macro_buffer, keyrecord_t **macro_pointer, keyrecord_t *macro2_end, int8_t direction, keyrecord_t *record) {
+void dynamic_macro_record_key(tinykeyevent_t *macro_buffer, tinykeyevent_t **macro_pointer, tinykeyevent_t *macro2_end, int8_t direction, tinykeyevent_t *record) {
     /* If we've just started recording, ignore all the key releases. */
-    if (!record->event.pressed && *macro_pointer == macro_buffer) {
+    if (!record->pressed && *macro_pointer == macro_buffer) {
         dprintln("dynamic macro: ignoring a leading key-up event");
         return;
     }
@@ -110,7 +121,7 @@ void dynamic_macro_record_key(keyrecord_t *macro_buffer, keyrecord_t **macro_poi
         **macro_pointer = *record;
         *macro_pointer += direction;
     } else {
-        dynamic_macro_record_key_user(direction, record);
+        //dynamic_macro_record_key_user(direction, record);
     }
 
     dprintf("dynamic macro: slot %d length: %d/%d\n", DYNAMIC_MACRO_CURRENT_SLOT(), DYNAMIC_MACRO_CURRENT_LENGTH(macro_buffer, *macro_pointer), DYNAMIC_MACRO_CURRENT_CAPACITY(macro_buffer, macro2_end));
@@ -120,13 +131,14 @@ void dynamic_macro_record_key(keyrecord_t *macro_buffer, keyrecord_t **macro_poi
  * End recording of the dynamic macro. Essentially just update the
  * pointer to the end of the macro.
  */
-void dynamic_macro_record_end(keyrecord_t *macro_buffer, keyrecord_t *macro_pointer, int8_t direction, keyrecord_t **macro_end) {
+void dynamic_macro_record_end(tinykeyevent_t *macro_buffer, tinykeyevent_t *macro_pointer, int8_t direction, tinykeyevent_t **macro_end) {
     dynamic_macro_record_end_user(direction);
 
     /* Do not save the keys being held when stopping the recording,
      * i.e. the keys used to access the layer DYN_REC_STOP is on.
      */
-    while (macro_pointer != macro_buffer && (macro_pointer - direction)->event.pressed) {
+    //while (macro_pointer != macro_buffer && (macro_pointer - direction)->event.pressed) {
+    while (macro_pointer != macro_buffer && (macro_pointer - direction)->pressed) {
         dprintln("dynamic macro: trimming a trailing key-down event");
         macro_pointer -= direction;
     }
@@ -139,7 +151,7 @@ void dynamic_macro_record_end(keyrecord_t *macro_buffer, keyrecord_t *macro_poin
 /* Handle the key events related to the dynamic macros. Should be
  * called from process_record_user() like this:
  *
- *   bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+ *   bool process_record_user(uint16_t keycode, tinykeyevent_t *record) {
  *       if (!process_record_dynamic_macro(keycode, record)) {
  *           return false;
  *       }
@@ -171,23 +183,23 @@ bool process_dynamic_macro(uint16_t keycode, keyrecord_t *record) {
      * macros or one long macro and one short macro. Or even one empty
      * and one using the whole buffer.
      */
-    static keyrecord_t macro_buffer[DYNAMIC_MACRO_SIZE];
+    static tinykeyevent_t macro_buffer[DYNAMIC_MACRO_SIZE];
 
     /* Pointer to the first buffer element after the first macro.
      * Initially points to the very beginning of the buffer since the
      * macro is empty. */
-    static keyrecord_t *macro_end = macro_buffer;
+    static tinykeyevent_t *macro_end = macro_buffer;
 
     /* The other end of the macro buffer. Serves as the beginning of
      * the second macro. */
-    static keyrecord_t *const r_macro_buffer = macro_buffer + DYNAMIC_MACRO_SIZE - 1;
+    static tinykeyevent_t *const r_macro_buffer = macro_buffer + DYNAMIC_MACRO_SIZE - 1;
 
     /* Like macro_end but for the second macro. */
-    static keyrecord_t *r_macro_end = r_macro_buffer;
+    static tinykeyevent_t *r_macro_end = r_macro_buffer;
 
     /* A persistent pointer to the current macro position (iterator)
      * used during the recording. */
-    static keyrecord_t *macro_pointer = NULL;
+    static tinykeyevent_t *macro_pointer = NULL;
 
     /* 0   - no macro is being recorded right now
      * 1,2 - either macro 1 or 2 is being recorded */
@@ -241,13 +253,18 @@ bool process_dynamic_macro(uint16_t keycode, keyrecord_t *record) {
                 return false;
 #endif
             default:
+                tinykeyevent_t tinyrecord;
+                //If overflow then 'n' 6x4
+                tinyrecord.col = (record->event.key.col < 16) ? record->event.key.col : 0x06;
+                tinyrecord.row = (record->event.key.row < 7 ) ? record->event.key.row : 0x04;
+                tinyrecord.pressed = record->event.pressed;
                 /* Store the key in the macro buffer and process it normally. */
                 switch (macro_id) {
                     case 1:
-                        dynamic_macro_record_key(macro_buffer, &macro_pointer, r_macro_end, +1, record);
+                        dynamic_macro_record_key(macro_buffer, &macro_pointer, r_macro_end, +1, &tinyrecord);
                         break;
                     case 2:
-                        dynamic_macro_record_key(r_macro_buffer, &macro_pointer, macro_end, -1, record);
+                        dynamic_macro_record_key(r_macro_buffer, &macro_pointer, macro_end, -1, &tinyrecord);
                         break;
                 }
                 return true;
