@@ -42,7 +42,7 @@ BACKLIGHT_ENABLE = no
 MAGIC_ENABLE = no
 BOOTMAGIC_ENABLE = yes  # Virtual DIP switch configuration
 MOUSEKEY_ENABLE = no    # Mouse keys
-EXTRAKEY_ENABLE = yes   # Audio control and System control
+EXTRAKEY_ENABLE = no   # Audio control and System control
 SLEEP_LED_ENABLE = no   # Breathing sleep LED during USB suspend
 NKRO_ENABLE = yes
 KEYBOARD_SHARED_EP = yes
@@ -54,13 +54,17 @@ LED_MATRIX_ENABLE = no
 LED_MATRIX_DRIVER = custom
 RGB_MATRIX_ENABLE = yes
 RGB_MATRIX_DRIVER = custom
+RGB_MATRIX_CUSTOM_USER = yes
 RAW_ENABLE = yes
+GRAVE_ESC_ENABLE = no
+
+DYNAMIC_MACRO_ENABLE = yes
 
 # ENCODER_ENABLE = yes
 # OPENRGB_ENABLE = yes
 
 # some options to reduce ram usage
-LDFLAGS += --specs=nano.specs
+LDFLAGS += --specs=nano.specs -Wl,--print-memory-usage
 OPT_DEFS += -DCORTEX_ENABLE_WFI_IDLE=TRUE
 USE_LINK_GC = yes
 LTO_ENABLE = yes

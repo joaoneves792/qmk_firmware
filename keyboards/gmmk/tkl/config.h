@@ -55,8 +55,10 @@
 // #define KEYMAP_ISO 1
 /* default ripple effect */
 #ifdef RGB_MATRIX_CUSTOM_USER
-#define RGB_MATRIX_STARTUP_MODE RGB_MATRIX_CUSTOM_RIPPLE
+#define RGB_MATRIX_STARTUP_MODE RGB_MATRIX_CUSTOM_static_white
 #endif
+
+#define DYNAMIC_MACRO_SIZE 64
 
 /* 
  * Optimization
@@ -69,6 +71,9 @@
 #define NO_DEBUG 1
 // #define NO_PRINT 1
 #define OPENRGB_DIRECT_MODE_UNBUFFERED  /* use unbuffered direct mode in OpenRGB protocol */
+
+#define LCPO_KEYS KC_LCTL, KC_LSFT, KC_LBRC
+#define RCPC_KEYS KC_RCTL, KC_LSFT, KC_RBRC
 
 #include "config_led.h"
 
