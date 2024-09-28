@@ -115,6 +115,10 @@
 #define LAPO_KEYS KC_LALT, KC_TRNS, KC_LBRC
 #define RAPC_KEYS KC_RALT, KC_TRNS, KC_RBRC
 
+
+#define NO_AUTO_SHIFT_ALPHA
+#define NO_AUTO_SHIFT_SPECIAL
+
 #include "config_led.h"
 
 // #define DEBUG_GMMK

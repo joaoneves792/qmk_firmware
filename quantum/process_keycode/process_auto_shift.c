@@ -22,7 +22,7 @@
 #    include "process_auto_shift.h"
 
 static uint16_t autoshift_time    = 0;
-static uint16_t autoshift_timeout = AUTO_SHIFT_TIMEOUT;
+//static uint16_t autoshift_timeout = AUTO_SHIFT_TIMEOUT;
 static uint16_t autoshift_lastkey = KC_NO;
 static struct {
     // Whether autoshift is enabled.
@@ -97,7 +97,7 @@ static void autoshift_end(uint16_t keycode, uint16_t now, bool matrix_trigger) {
 
         // Time since the initial press was recorded.
         const uint16_t elapsed = TIMER_DIFF_16(now, autoshift_time);
-        if (elapsed < autoshift_timeout) {
+        if (elapsed < AUTO_SHIFT_TIMEOUT) {
             register_code(autoshift_lastkey);
             autoshift_flags.lastshifted = false;
         } else {
@@ -143,7 +143,7 @@ void autoshift_matrix_scan(void) {
     if (autoshift_flags.in_progress) {
         const uint16_t now     = timer_read();
         const uint16_t elapsed = TIMER_DIFF_16(now, autoshift_time);
-        if (elapsed >= autoshift_timeout) {
+        if (elapsed >= AUTO_SHIFT_TIMEOUT) {
             autoshift_end(autoshift_lastkey, now, true);
         }
     }
@@ -165,7 +165,7 @@ void autoshift_disable(void) {
 void autoshift_timer_report(void) {
     char display[8];
 
-    snprintf(display, 8, "\n%d\n", autoshift_timeout);
+    snprintf(display, 8, "\n%d\n", AUTO_SHIFT_TIMEOUT);
 
     send_string((const char *)display);
 }
@@ -173,9 +173,9 @@ void autoshift_timer_report(void) {
 
 bool get_autoshift_state(void) { return autoshift_flags.enabled; }
 
-uint16_t get_autoshift_timeout(void) { return autoshift_timeout; }
+uint16_t get_autoshift_timeout(void) { return AUTO_SHIFT_TIMEOUT; }
 
-void set_autoshift_timeout(uint16_t timeout) { autoshift_timeout = timeout; }
+void set_autoshift_timeout(uint16_t timeout) { }//autoshift_timeout = timeout; }
 
 bool process_auto_shift(uint16_t keycode, keyrecord_t *record) {
     // Note that record->event.time isn't reliable, see:
@@ -190,7 +190,7 @@ bool process_auto_shift(uint16_t keycode, keyrecord_t *record) {
         }
         // For pressing another key while keyrepeating shifted autoshift.
         del_weak_mods(MOD_BIT(KC_LSFT));
-
+/*
         switch (keycode) {
             case KC_ASTG:
                 autoshift_toggle();
@@ -215,6 +215,7 @@ bool process_auto_shift(uint16_t keycode, keyrecord_t *record) {
                 return true;
 #    endif
         }
+*/
     }
 
     switch (keycode) {

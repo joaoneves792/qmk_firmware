@@ -18,6 +18,7 @@ enum custom_keycodes {
     KC_VIMC7,
     KC_VIMC8,
     KC_VIMC9,
+    KC_DBELL,
 };
 
 static uint8_t  last_mods;
@@ -134,6 +135,9 @@ void process_repeat_key(bool pressed){
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
+      case KC_DBELL:
+          SEND_STRING("\a");
+          return false;
       case QMKDOOM:
           if (record->event.pressed) {
             process_doom();
@@ -180,7 +184,7 @@ void dynamic_macro_record_end_user(int8_t direction) { user_red_key_index = NO_L
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     /* The GMMK uses a 7x16 matrix. Some keys are not wired in the matrix at their physical location */
 
-    [_BL] = KEYMAP(     QMKDOOM,    KC_F1,      KC_F2,      KC_F3,      KC_F4,      KC_F5,      KC_F6,      KC_F7,      KC_F8,      KC_F9,          KC_F10,         KC_F11,     KC_F12, 
+    [_BL] = KEYMAP(     KC_DBELL,   KC_F1,      KC_F2,      KC_F3,      KC_F4,      KC_F5,      KC_F6,      KC_F7,      KC_F8,      KC_F9,          KC_F10,         KC_F11,     KC_F12, 
                         KC_GRV,     KC_1,       KC_2,       KC_3,       KC_4,       KC_5,       KC_6,       KC_7,       KC_8,       KC_9,           KC_0,           KC_MINS,    KC_EQL,
                         KC_TAB,     KC_Q,       KC_W,       KC_E,       KC_R,       KC_T,       KC_Y,       KC_U,       KC_I,       KC_O,           KC_P,           KC_LBRC,    KC_RBRC,
                         KC_ESC,     KC_A,       KC_S,       KC_D,       KC_F,       KC_G,       KC_H,       KC_J,       KC_K,       KC_L,           KC_SCLN,        KC_QUOT,    KC_BSLS,
@@ -196,7 +200,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                         KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_RREP,    KC_TRNS,    RGB_HUD,    RGB_VAD,        RGB_VAI,        RGB_HUI,    KC_TRNS,
                         KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS,    RGB_M_B,    RGB_M_R,    RGB_M_SW,   RGB_MOD,    RGB_RMOD),
 
-    [_VIM] = KEYMAP(    RESET,      KC_MYCM,    KC_MAIL,    KC_LANG1,   KC_LANG2,   KC_MPRV,    KC_MNXT,    KC_MPLY,    KC_MSTP,    KC_MUTE,        KC_VOLD,        KC_VOLU,    KC_TRNS,
+    [_VIM] = KEYMAP(    QMKDOOM,    KC_MYCM,    KC_MAIL,    KC_LANG1,   KC_LANG2,   KC_MPRV,    KC_MNXT,    KC_MPLY,    KC_MSTP,    KC_MUTE,        KC_VOLD,        KC_VOLU,    KC_TRNS,
                         KC_TRNS,    KC_VIMC1,   KC_VIMC2,   KC_VIMC3,   KC_VIMC4,   KC_VIMC5,   KC_VIMC6,   KC_VIMC7,   KC_VIMC8,   KC_VIMC9,       KC_VIMC0,       KC_TRNS,    KC_TRNS,
                         KC_TRNS,    DM_REC1,    KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS,    C(KC_C),    KC_TRNS,    KC_TRNS,    KC_TRNS,        C(KC_V),        KC_TRNS,    KC_TRNS,
                         TG(_VIM),   KC_TRNS,    RGB_TOG,    KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_LEFT,    KC_DOWN,    KC_UP,      KC_RIGHT,       KC_TRNS,        KC_TRNS,    KC_TRNS,
