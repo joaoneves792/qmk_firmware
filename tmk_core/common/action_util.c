@@ -27,6 +27,10 @@ extern keymap_config_t keymap_config;
 static uint8_t real_mods  = 0;
 static uint8_t weak_mods  = 0;
 static uint8_t macro_mods = 0;
+#ifdef KEY_OVERRIDE_ENABLE
+static uint8_t weak_override_mods = 0;
+static uint8_t suppressed_mods    = 0;
+#endif
 
 #ifdef USB_6KRO_ENABLE
 #    define RO_ADD(a, b) ((a + b) % KEYBOARD_REPORT_KEYS)
@@ -184,14 +188,9 @@ void clear_oneshot_layer_state(oneshot_fullfillment_t state) {
 bool is_oneshot_layer_active(void) { return get_oneshot_layer_state(); }
 #endif
 
-/** \brief Send keyboard report
- *
- * FIXME: needs doc
- */
-void send_keyboard_report(void) {
-    keyboard_report->mods = real_mods;
-    keyboard_report->mods |= weak_mods;
-    keyboard_report->mods |= macro_mods;
+static uint8_t get_mods_for_report(void) {
+    uint8_t mods = real_mods | weak_mods | macro_mods;
+
 #ifndef NO_ACTION_ONESHOT
     if (oneshot_mods) {
 #    if (defined(ONESHOT_TIMEOUT) && (ONESHOT_TIMEOUT > 0))
@@ -200,13 +199,28 @@ void send_keyboard_report(void) {
             clear_oneshot_mods();
         }
 #    endif
-        keyboard_report->mods |= oneshot_mods;
+        mods |= oneshot_mods;
         if (has_anykey(keyboard_report)) {
             clear_oneshot_mods();
         }
     }
-
 #endif
+
+#ifdef KEY_OVERRIDE_ENABLE
+    // These need to be last to be able to properly control key overrides
+    mods &= ~suppressed_mods;
+    mods |= weak_override_mods;
+#endif
+
+    return mods;
+}
+
+/** \brief Send keyboard report
+ *
+ * FIXME: needs doc
+ */
+void send_keyboard_report(void) {
+    keyboard_report->mods = get_mods_for_report();
     host_keyboard_send(keyboard_report);
 }
 
@@ -288,6 +302,33 @@ void set_macro_mods(uint8_t mods) { macro_mods = mods; }
  * FIXME: needs doc
  */
 void clear_macro_mods(void) { macro_mods = 0; }
+
+
+#ifdef KEY_OVERRIDE_ENABLE
+/** \brief set weak mods used by key overrides. DO not call this manually
+ */
+void set_weak_override_mods(uint8_t mods) {
+    weak_override_mods = mods;
+}
+/** \brief clear weak mods used by key overrides. DO not call this manually
+ */
+void clear_weak_override_mods(void) {
+    weak_override_mods = 0;
+}
+
+/** \brief set suppressed mods used by key overrides. DO not call this manually
+ */
+void set_suppressed_override_mods(uint8_t mods) {
+    suppressed_mods = mods;
+}
+/** \brief clear suppressed mods used by key overrides. DO not call this manually
+ */
+void clear_suppressed_override_mods(void) {
+    suppressed_mods = 0;
+}
+#endif
+
+
 
 #ifndef NO_ACTION_ONESHOT
 /** \brief get oneshot mods

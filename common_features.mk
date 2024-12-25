@@ -559,6 +559,12 @@ ifeq ($(strip $(SPACE_CADET_ENABLE)), yes)
     OPT_DEFS += -DSPACE_CADET_ENABLE
 endif
 
+KEY_OVERRIDE_ENABLE ?= yes
+ifeq ($(strip $(KEY_OVERRIDE_ENABLE)), yes)
+    SRC += $(QUANTUM_DIR)/process_keycode/process_key_override.c
+    OPT_DEFS += -DKEY_OVERRIDE_ENABLE
+endif
+
 MAGIC_ENABLE ?= yes
 ifeq ($(strip $(MAGIC_ENABLE)), yes)
     SRC += $(QUANTUM_DIR)/process_keycode/process_magic.c

@@ -116,8 +116,10 @@
 #define RAPC_KEYS KC_RALT, KC_TRNS, KC_RBRC
 
 
+#define KEY_OVERRIDES_COUNT 9
+
 #define NO_AUTO_SHIFT_ALPHA
-#define NO_AUTO_SHIFT_SPECIAL
+//#define NO_AUTO_SHIFT_SPECIAL
 
 #include "config_led.h"
 

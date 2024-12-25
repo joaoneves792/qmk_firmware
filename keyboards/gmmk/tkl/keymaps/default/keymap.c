@@ -30,6 +30,137 @@ uint8_t user_red_key_index = NO_LED;
 uint8_t g_vim_count = 0;
 static bool ignore = false;
 
+//const key_override_t h_key_override = ko_make_basic(MOD_MASK_CTRL, KC_H, KC_BSPC);
+const key_override_t ctrl_h_key_override  = {
+                                   .trigger                = KC_H,
+                                   .trigger_mods           = MOD_MASK_CTRL,
+                                   .layers                 = ~(0),
+                                   .suppressed_mods        = MOD_MASK_CTRL,
+                                   .negative_mod_mask      = (uint8_t) ~(MOD_BIT(KC_RCTL) | MOD_BIT(KC_LCTL)),
+                                   .options                = ko_options_default,
+                                   .custom_action          = NULL,
+                                   .replacement            = KC_BSPC,
+                                   .context                = NULL,
+                                   .enabled                = NULL
+};
+
+const key_override_t ctrl_shift_h_key_override  = {
+                                   .trigger                = KC_H,
+                                   .trigger_mods           = MOD_MASK_CTRL | MOD_MASK_SHIFT,
+                                   .layers                 = ~(0),
+                                   .suppressed_mods        = MOD_MASK_CTRL | MOD_MASK_SHIFT,
+                                   .negative_mod_mask      = (uint8_t) ~(MOD_BIT(KC_RCTL) | MOD_BIT(KC_LCTL) | MOD_BIT(KC_LSFT) | MOD_BIT(KC_RSFT)),
+                                   .options                = ko_options_default,
+                                   .custom_action          = NULL,
+                                   .replacement            = KC_DEL,
+                                   .context                = NULL,
+                                   .enabled                = NULL
+};
+
+const key_override_t ctrl_j_key_override  = {
+                                   .trigger                = KC_J,
+                                   .trigger_mods           = MOD_MASK_CTRL,
+                                   .layers                 = ~(0),
+                                   .suppressed_mods        = MOD_BIT(KC_RCTL) | MOD_BIT(KC_LCTL),
+                                   .negative_mod_mask      = (uint8_t) ~(MOD_BIT(KC_RCTL) | MOD_BIT(KC_LCTL)),
+                                   .options                = ko_options_default,
+                                   .custom_action          = NULL,
+                                   .replacement            = KC_ENT,
+                                   .context                = NULL,
+                                   .enabled                = NULL
+};
+
+const key_override_t ctrl_k_key_override  = {
+                                   .trigger                = KC_K,
+                                   .trigger_mods           = MOD_MASK_CTRL,
+                                   .layers                 = ~(0),
+                                   .suppressed_mods        = MOD_BIT(KC_RCTL) | MOD_BIT(KC_LCTL),
+                                   .negative_mod_mask      = (uint8_t) ~(MOD_BIT(KC_RCTL) | MOD_BIT(KC_LCTL)),
+                                   .options                = ko_options_default,
+                                   .custom_action          = NULL,
+                                   .replacement            = KC_TAB,
+                                   .context                = NULL,
+                                   .enabled                = NULL
+};
+
+const key_override_t ctrl_shift_k_key_override  = {
+                                   .trigger                = KC_K,
+                                   .trigger_mods           = MOD_MASK_CTRL | MOD_MASK_SHIFT,
+                                   .layers                 = ~(0),
+                                   .suppressed_mods        = MOD_BIT(KC_RCTL) | MOD_BIT(KC_LCTL),
+                                   .negative_mod_mask      = (uint8_t) ~(MOD_BIT(KC_RCTL) | MOD_BIT(KC_LCTL) | MOD_BIT(KC_LSFT) | MOD_BIT(KC_RSFT)),
+                                   .options                = ko_options_default,
+                                   .custom_action          = NULL,
+                                   .replacement            = KC_TAB,
+                                   .context                = NULL,
+                                   .enabled                = NULL
+};
+
+const key_override_t lalt_h_key_override  = {
+                                   .trigger                = KC_H,
+                                   .trigger_mods           = MOD_BIT(KC_LALT),
+                                   .layers                 = ~(0),
+                                   .suppressed_mods        = MOD_BIT(KC_LALT),
+                                   .negative_mod_mask      = (uint8_t) ~(MOD_BIT(KC_LALT)),
+                                   .options                = ko_options_default,
+                                   .custom_action          = NULL,
+                                   .replacement            = KC_LEFT,
+                                   .context                = NULL,
+                                   .enabled                = NULL
+};
+
+const key_override_t lalt_j_key_override  = {
+                                   .trigger                = KC_J,
+                                   .trigger_mods           = MOD_BIT(KC_LALT),
+                                   .layers                 = ~(0),
+                                   .suppressed_mods        = MOD_BIT(KC_LALT),
+                                   .negative_mod_mask      = (uint8_t) ~(MOD_BIT(KC_LALT)),
+                                   .options                = ko_options_default,
+                                   .custom_action          = NULL,
+                                   .replacement            = KC_DOWN,
+                                   .context                = NULL,
+                                   .enabled                = NULL
+};
+
+const key_override_t lalt_k_key_override  = {
+                                   .trigger                = KC_K,
+                                   .trigger_mods           = MOD_BIT(KC_LALT),
+                                   .layers                 = ~(0),
+                                   .suppressed_mods        = MOD_BIT(KC_LALT),
+                                   .negative_mod_mask      = (uint8_t) ~(MOD_BIT(KC_LALT)),
+                                   .options                = ko_options_default,
+                                   .custom_action          = NULL,
+                                   .replacement            = KC_UP,
+                                   .context                = NULL,
+                                   .enabled                = NULL
+};
+
+const key_override_t lalt_l_key_override  = {
+                                   .trigger                = KC_L,
+                                   .trigger_mods           = MOD_BIT(KC_LALT),
+                                   .layers                 = ~(0),
+                                   .suppressed_mods        = MOD_BIT(KC_LALT),
+                                   .negative_mod_mask      = (uint8_t) ~(MOD_BIT(KC_LALT)),
+                                   .options                = ko_options_default,
+                                   .custom_action          = NULL,
+                                   .replacement            = KC_RIGHT,
+                                   .context                = NULL,
+                                   .enabled                = NULL
+};
+
+// This globally defines all key overrides to be used
+const key_override_t *key_overrides[] = {
+	&ctrl_h_key_override,
+	&ctrl_shift_h_key_override,
+	&ctrl_j_key_override,
+	&ctrl_k_key_override,
+	&ctrl_shift_k_key_override,
+  &lalt_h_key_override, 
+  &lalt_j_key_override, 
+  &lalt_k_key_override, 
+  &lalt_l_key_override
+};
+
 #define QK_IS_BASIC(kc) (kc > QK_BASIC && kc <= QK_BASIC_MAX)
 
 bool post_process_intercept_user(uint16_t keycode, keyrecord_t *record) {
@@ -133,6 +264,7 @@ void process_repeat_key(bool pressed){
     }
 }
 
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
       case KC_DBELL:
@@ -187,7 +319,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_BL] = KEYMAP(     KC_DBELL,   KC_F1,      KC_F2,      KC_F3,      KC_F4,      KC_F5,      KC_F6,      KC_F7,      KC_F8,      KC_F9,          KC_F10,         KC_F11,     KC_F12, 
                         KC_GRV,     KC_1,       KC_2,       KC_3,       KC_4,       KC_5,       KC_6,       KC_7,       KC_8,       KC_9,           KC_0,           KC_MINS,    KC_EQL,
                         KC_TAB,     KC_Q,       KC_W,       KC_E,       KC_R,       KC_T,       KC_Y,       KC_U,       KC_I,       KC_O,           KC_P,           KC_LBRC,    KC_RBRC,
-                        KC_ESC,     KC_A,       KC_S,       KC_D,       KC_F,       KC_G,       KC_H,       KC_J,       KC_K,       KC_L,           KC_SCLN,        KC_QUOT,    KC_BSLS,
+                        LALT_T(KC_ESC),KC_A,    KC_S,       KC_D,       KC_F,       KC_G,       KC_H,       KC_J,       KC_K,       KC_L,           KC_SCLN,        KC_QUOT,    KC_BSLS,
                         KC_LSPO,    KC_Z,       KC_X,       KC_C,       KC_V,       KC_B,       KC_N,       KC_M,       KC_COMM,    KC_DOT,         KC_SLSH,        KC_RSPC,    KC_ENT,
                         KC_LCPO,    KC_LGUI,    KC_LAPO,    KC_SPC,     KC_RAPC,    MO(_FN),    KC_REP,     KC_RCPC,    KC_LEFT,    KC_DOWN,        KC_UP,          KC_RGHT,    KC_BSPC,
                         KC_NO,      KC_PSCR,    KC_SLCK,    KC_PAUS,    KC_INS,     KC_HOME,    KC_PGUP,    KC_DEL,     KC_END,     KC_PGDN),

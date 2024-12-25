@@ -62,6 +62,31 @@ float bell_song[][2] = SONG(TERMINAL_SOUND);
 #    include "process_auto_shift.h"
 #endif
 
+uint8_t extract_mod_bits(uint16_t code) {
+    switch (code) {
+        case QK_MODS ... QK_MODS_MAX:
+            break;
+        default:
+            return 0;
+    }
+
+    uint8_t mods_to_send = 0;
+
+    if (code & QK_RMODS_MIN) { // Right mod flag is set
+        if (code & QK_LCTL) mods_to_send |= MOD_BIT(KC_RCTRL);
+        if (code & QK_LSFT) mods_to_send |= MOD_BIT(KC_RSHIFT);
+        if (code & QK_LALT) mods_to_send |= MOD_BIT(KC_RALT);
+        if (code & QK_LGUI) mods_to_send |= MOD_BIT(KC_RGUI);
+    } else {
+        if (code & QK_LCTL) mods_to_send |= MOD_BIT(KC_LCTRL);
+        if (code & QK_LSFT) mods_to_send |= MOD_BIT(KC_LSHIFT);
+        if (code & QK_LALT) mods_to_send |= MOD_BIT(KC_LALT);
+        if (code & QK_LGUI) mods_to_send |= MOD_BIT(KC_LGUI);
+    }
+
+    return mods_to_send;
+}
+
 static void do_code16(uint16_t code, void (*f)(uint8_t)) {
     switch (code) {
         case QK_MODS ... QK_MODS_MAX:
@@ -208,6 +233,7 @@ bool process_record_quantum(keyrecord_t *record) {
     }
 #endif
 
+
 #ifdef TAP_DANCE_ENABLE
     preprocess_tap_dance(keycode, record);
 #endif
@@ -252,6 +278,11 @@ bool process_record_quantum(keyrecord_t *record) {
 #if (defined(AUDIO_ENABLE) || (defined(MIDI_ENABLE) && defined(MIDI_BASIC))) && !defined(NO_MUSIC_MODE)
             process_music(keycode, record) &&
 #endif
+
+#ifdef KEY_OVERRIDE_ENABLE
+            process_key_override(keycode, record) &&
+#endif
+
 #ifdef TAP_DANCE_ENABLE
             process_tap_dance(keycode, record) &&
 #endif
